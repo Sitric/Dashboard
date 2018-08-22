@@ -1,5 +1,9 @@
 package com.sitric.dashboard.UI;
 
+/**
+ * GuestCounter UI class
+ */
+
 import com.sitric.dashboard.service.DashboardService;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Alignment;
@@ -13,12 +17,11 @@ public class GuestCounterUI extends VerticalLayout {
 
     @Autowired
     private DashboardService service;
-    private VerticalLayout counterLayout;
 
     Component addGuestCounterWidget() {
-        counterLayout = new VerticalLayout();
+        VerticalLayout counterLayout = new VerticalLayout();
 
-        // название виджета
+        // widget title
         Label widgetLabel = new Label("Счетчик посещений");
         counterLayout.addComponent(widgetLabel);
 

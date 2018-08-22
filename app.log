@@ -1,9 +1,9 @@
-2018-08-22 15:25:31.656 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requesting weather forecast for Москва
-2018-08-22 15:25:32.040 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requested weather forecast for Москва was successfully executed
-2018-08-22 15:25:32.042 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requesting for exchange rates
-2018-08-22 15:25:32.273 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requested exchange rates was successfully executed
-2018-08-22 15:25:32.274 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Determine the number of visits to the site
-2018-08-22 15:25:32.331 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Number of visits to the site successfully determined
-2018-08-22 15:25:32.332 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Trying to get actual date and time
-2018-08-22 15:25:32.333 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requesting for remote IP address
-2018-08-22 15:25:32.650 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Remote IP address successfully determined
+2018-08-22 23:10:29.951 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requesting weather forecast for Москва
+2018-08-22 23:10:30.310 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requested weather forecast for Москва was successfully executed
+2018-08-22 23:10:30.311 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requesting for exchange rates
+2018-08-22 23:10:30.608 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requested exchange rates was successfully executed
+2018-08-22 23:10:30.610 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Determine the number of visits to the site
+2018-08-22 23:10:30.676 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Number of visits to the site successfully determined
+2018-08-22 23:10:30.676 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Trying to get actual date and time
+2018-08-22 23:10:30.678 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requesting for remote IP address
+2018-08-22 23:10:30.995 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Remote IP address successfully determined

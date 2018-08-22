@@ -10,6 +10,7 @@ import com.sitric.dashboard.model.DisplayExchangeRates;
 import com.sitric.dashboard.model.DisplayForecast;
 import com.sitric.dashboard.model.GuestCounter;
 import com.sitric.dashboard.repository.GuestCounterRepository;
+import com.vaadin.ui.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,21 +47,18 @@ public class DashboardServiceImpl implements DashboardService {
     */
 
     @Override
-    public DisplayForecast getForecast(Optional<City> city){
-
-        DisplayForecast df = null;
+    public void getForecast(Optional<City> city, Label weatherCurrent, Label forecastLabel){
         if (city.isPresent()){
             logger.debug("Requesting weather forecast for " + city.get().getName());
 
-            StringBuilder url = new StringBuilder("https://api.weather.yandex.ru/v1/forecast");
-            url.append("?lat=" + city.get().getLatitude());
-            url.append("&lon=" + city.get().getLongitude());
-            url.append("&lang=ru_RU");
-            url.append("&limit=2");
-            url.append("&hours=false");
-            URL obj = null;
+            String url = "https://api.weather.yandex.ru/v1/forecast" +
+                    "?lat=" + city.get().getLatitude() +
+                    "&lon=" + city.get().getLongitude() +
+                    "&lang=ru_RU" +
+                    "&limit=2" +
+                    "&hours=false";
             try {
-                obj = new URL(url.toString());
+                URL obj = new URL(url);
                 ObjectMapper mapper = new ObjectMapper();
 
                 try {
@@ -76,14 +74,21 @@ public class DashboardServiceImpl implements DashboardService {
                         result.append(inputLine);
                     }
                     in.close();
-                    df = mapper.readValue(result.toString(), DisplayForecast.class);
+                    DisplayForecast df = mapper.readValue(result.toString(), DisplayForecast.class);
+                    /*System.out.println("YANDEX WEATHER: " + df);
+                    System.out.println(df.equals(""));*/
+                    weatherCurrent.setValue("Температура текущая " + df.getWeatherToday() + "° C");
+                    forecastLabel.setValue("Прогноз на завтра " + df.getWeatherTomorrow() + "° C");
+
                     logger.debug("Requested weather forecast for " + city.get().getName() + " was successfully executed");
                 } catch (IOException e) {
-                    logger.error("I/O Exception when trying to request for API Yandex.Weather");
+                    weatherCurrent.setValue("Отсутствует соединение с Яндекс.Погода");
+                    logger.error("I/O Exception when trying to request for API Yandex.Weather. Check application.property: yandex.apikey");
                     //e.printStackTrace();
                 }
 
             } catch (MalformedURLException e) {
+                weatherCurrent.setValue("Отсутствует соединение с Яндекс.Погода");
                 logger.error("Incorrect format for URL when trying to request for API Yandex.Weather");
                 //e.printStackTrace();
             }
@@ -91,7 +96,8 @@ public class DashboardServiceImpl implements DashboardService {
         else {
             logger.error("Error when passing object of class City to method getForecast");
         }
-        return df;
+
+//        return df;
 
     }
 
@@ -103,11 +109,11 @@ public class DashboardServiceImpl implements DashboardService {
      */
 
     @Override
-    public DisplayExchangeRates getExchangeRates() {
+    public void  getExchangeRates(Label USD, Label EUR) {
         logger.debug("Requesting for exchange rates");
+
         String url = "https://www.cbr-xml-daily.ru/daily_json.js";
 
-        DisplayExchangeRates der = null;
         ObjectMapper mapper = new ObjectMapper();
 
         HttpURLConnection connection;
@@ -125,18 +131,23 @@ public class DashboardServiceImpl implements DashboardService {
                     result.append(inputLine);
                 }
                 in.close();
-                der = mapper.readValue(result.toString(), DisplayExchangeRates.class);
+                DisplayExchangeRates der = mapper.readValue(result.toString(), DisplayExchangeRates.class);
+
+                USD.setValue("USD: " + der.getUSDRate() + " RUB");
+                EUR.setValue("EUR: " + der.getEURRate() + " RUB");
+
                 logger.debug("Requested exchange rates was successfully executed");
             } catch (IOException e) {
+                EUR.setValue("Отсутствует соединение с ЦБ РФ");
                 logger.error("I/O Exception when trying to request for API Central Bank of Russia");
             }
 
         } catch (MalformedURLException e) {
+            EUR.setValue("Отсутствует соединение с ЦБ РФ");
             logger.error("incorrect format for URL when trying to request for API Central Bank of Russia");
             //e.printStackTrace();
         }
 
-        return der;
     }
 
     /*
@@ -179,7 +190,6 @@ public class DashboardServiceImpl implements DashboardService {
      *
      */
 
-    //TODO подумать, есть ли необходимость хранить дату в БД в данном случае
 
     @Override
     public String getActualDateTime() {

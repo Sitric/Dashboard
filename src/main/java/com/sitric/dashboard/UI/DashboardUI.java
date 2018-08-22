@@ -1,9 +1,14 @@
 package com.sitric.dashboard.UI;
 
+/**
+ * Main UI class
+ */
+
 import com.sitric.dashboard.service.DashboardService;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
+import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringUI(path = "")
@@ -32,12 +37,14 @@ public class DashboardUI extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         VerticalLayout outerLayout = new VerticalLayout();
+
         HorizontalLayout widgetLayout = new HorizontalLayout();
         HorizontalLayout bottomLayout = new HorizontalLayout();
         widgetLayout.setSizeFull();
 
 
         Label headerLabel = new Label("Тестовое сетевое приложение");
+        headerLabel.addStyleName(ValoTheme.LABEL_H3);
         outerLayout.addComponent(headerLabel);
         outerLayout.setComponentAlignment(headerLabel, Alignment.TOP_CENTER);
 
@@ -65,7 +72,6 @@ public class DashboardUI extends UI {
         outerLayout.addComponent(widgetLayout);
         outerLayout.addComponent(bottomLayout);
         setContent(outerLayout);
-
 
     }
 }

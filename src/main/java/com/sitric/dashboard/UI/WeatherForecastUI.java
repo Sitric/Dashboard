@@ -1,13 +1,15 @@
 package com.sitric.dashboard.UI;
 
+/**
+ * WeatherForecast UI class
+ */
+
 import com.sitric.dashboard.model.City;
-import com.sitric.dashboard.model.DisplayForecast;
 import com.sitric.dashboard.service.DashboardService;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.net.MalformedURLException;
 import java.util.List;
 
 @SpringUI(path = "")
@@ -16,40 +18,39 @@ public class WeatherForecastUI extends VerticalLayout {
     @Autowired
     private DashboardService service;
 
-    private DisplayForecast displayForecast;
-    private VerticalLayout forecastLayout;
 
-     Component addForecastWidget() {
-        forecastLayout = new VerticalLayout();
+    Component addForecastWidget() {
+        VerticalLayout forecastLayout = new VerticalLayout();
 
-        // название виджета
+        // widget title
         Label widgetLabel = new Label("Прогноз погоды");
         forecastLayout.addComponent(widgetLabel);
 
-        //получаем список городов
+        //getting list of cities
         List<City> cities = service.generateCityList();
 
-        //передаем их в ComboBox
+        //set names of cities into ComboBox
         ComboBox<City> comboBox = new ComboBox<>();
+        comboBox.setEmptySelectionAllowed(false);
         comboBox.setItems(cities);
         comboBox.setItemCaptionGenerator(City::getName);
         comboBox.setSelectedItem(cities.get(0));
         forecastLayout.addComponent(comboBox);
 
 
-        displayForecast = service.getForecast(comboBox.getSelectedItem());
-
-        // информация о погоде
-        //TODO: вынести в отдельный метод
-        Label weatherCurrent = new Label("Температура текущая " + displayForecast.getWeatherToday() + "° C");
+        // weather labels
+        Label weatherCurrent = new Label();
         forecastLayout.addComponent(weatherCurrent);
 
-        Label forecastLabel = new Label("Прогноз на завтра " + displayForecast.getWeatherTomorrow() + "° C");
+        Label forecastLabel = new Label();
         forecastLayout.addComponent(forecastLabel);
 
-        //кнопка "обновить"
+        //get weather data from API Yandex.Weather
+        service.getForecast(comboBox.getSelectedItem(), weatherCurrent, forecastLabel);
+
+
+        // button "обновить"
         addUpdateWeatherButton(comboBox, forecastLayout, weatherCurrent, forecastLabel);
-        //TODO посмотреть картинку при обрыве соединения
 
 
         return forecastLayout;
@@ -58,11 +59,12 @@ public class WeatherForecastUI extends VerticalLayout {
     void addUpdateWeatherButton(ComboBox<City> comboBox, Layout forecastLayout, Label weatherCurrent, Label forecastLabel) {
         forecastLayout.addComponent(
             new Button("обновить", clickEvent -> {
-                displayForecast = service.getForecast(comboBox.getSelectedItem());
-                weatherCurrent.setValue("Температура текущая " + displayForecast.getWeatherToday() + "° C");
-                forecastLabel.setValue("Прогноз на завтра " + displayForecast.getWeatherTomorrow() + "° C");
+
+                //update weather data from API Yandex.Weather
+                service.getForecast(comboBox.getSelectedItem(), weatherCurrent, forecastLabel);
             })
         );
     }
+
 
 }
