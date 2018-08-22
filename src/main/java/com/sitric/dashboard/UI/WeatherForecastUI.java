@@ -36,40 +36,32 @@ public class WeatherForecastUI extends VerticalLayout {
         comboBox.setSelectedItem(cities.get(0));
         forecastLayout.addComponent(comboBox);
 
-        try {
-            displayForecast = service.getForecast(comboBox.getSelectedItem());
 
-            // информация о погоде
-            //TODO: вынести в отдельный метод
-            Label weatherCurrent = new Label("Температура текущая " + displayForecast.getWeatherToday() + "° C");
-            forecastLayout.addComponent(weatherCurrent);
+        displayForecast = service.getForecast(comboBox.getSelectedItem());
 
-            Label forecastLabel = new Label("Прогноз на завтра " + displayForecast.getWeatherTomorrow() + "° C");
-            forecastLayout.addComponent(forecastLabel);
+        // информация о погоде
+        //TODO: вынести в отдельный метод
+        Label weatherCurrent = new Label("Температура текущая " + displayForecast.getWeatherToday() + "° C");
+        forecastLayout.addComponent(weatherCurrent);
 
-            //кнопка "обновить"
-            addUpdateWeatherButton(comboBox, forecastLayout, weatherCurrent, forecastLabel);
+        Label forecastLabel = new Label("Прогноз на завтра " + displayForecast.getWeatherTomorrow() + "° C");
+        forecastLayout.addComponent(forecastLabel);
 
-        } catch (MalformedURLException e) {
-            //TODO посмотреть картинку при обрыве соединения
-            e.printStackTrace();
-        }
+        //кнопка "обновить"
+        addUpdateWeatherButton(comboBox, forecastLayout, weatherCurrent, forecastLabel);
+        //TODO посмотреть картинку при обрыве соединения
+
 
         return forecastLayout;
     }
 
     void addUpdateWeatherButton(ComboBox<City> comboBox, Layout forecastLayout, Label weatherCurrent, Label forecastLabel) {
         forecastLayout.addComponent(
-                new Button("обновить", clickEvent -> {
-
-                    try {
-                        displayForecast = service.getForecast(comboBox.getSelectedItem());
-                        weatherCurrent.setValue("Температура текущая " + displayForecast.getWeatherToday() + "° C");
-                        forecastLabel.setValue("Прогноз на завтра " + displayForecast.getWeatherTomorrow() + "° C");
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    }
-                })
+            new Button("обновить", clickEvent -> {
+                displayForecast = service.getForecast(comboBox.getSelectedItem());
+                weatherCurrent.setValue("Температура текущая " + displayForecast.getWeatherToday() + "° C");
+                forecastLabel.setValue("Прогноз на завтра " + displayForecast.getWeatherTomorrow() + "° C");
+            })
         );
     }
 

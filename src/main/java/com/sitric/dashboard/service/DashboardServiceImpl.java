@@ -1,9 +1,18 @@
 package com.sitric.dashboard.service;
 
+/**
+ * Implementation of DashboardService
+ */
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sitric.dashboard.model.City;
 import com.sitric.dashboard.model.DisplayExchangeRates;
 import com.sitric.dashboard.model.DisplayForecast;
+import com.sitric.dashboard.model.GuestCounter;
+import com.sitric.dashboard.repository.GuestCounterRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,58 +22,95 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class DashboardServiceImpl implements DashboardService {
 
+    private static Logger logger = LoggerFactory.getLogger(DashboardService.class);
+
+    @Autowired
+    GuestCounterRepository repository;
+
     @Value("${yandex.apikey}")
     private String apikey;
 
+    /*
+    * getForecast method
+    *
+    * input parameter instance of City class.
+    * output parameter instance of DisplayForecast class
+    * It makes a request to API Yandex.Weather, used the latitude and longitude of the city
+    * and receives weather forecast in JSON.
+    */
+
     @Override
-    public DisplayForecast getForecast(Optional<City> city) throws MalformedURLException {
-        StringBuilder url = new StringBuilder("https://api.weather.yandex.ru/v1/forecast");
-        url.append("?lat=" + city.get().getLatitude());
-        url.append("&lon=" + city.get().getLongitude());
-        url.append("&lang=ru_RU");
-        url.append("&limit=2");
-        url.append("&hours=false");
-        URL obj = new URL(url.toString());
+    public DisplayForecast getForecast(Optional<City> city){
 
-        DisplayForecast df = new DisplayForecast();
-        ObjectMapper mapper = new ObjectMapper();
+        DisplayForecast df = null;
+        if (city.isPresent()){
+            logger.debug("Requesting weather forecast for " + city.get().getName());
 
-        try {
-            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
-            connection.setRequestProperty("X-Yandex-API-Key", apikey);
-            connection.setRequestMethod("GET");
+            StringBuilder url = new StringBuilder("https://api.weather.yandex.ru/v1/forecast");
+            url.append("?lat=" + city.get().getLatitude());
+            url.append("&lon=" + city.get().getLongitude());
+            url.append("&lang=ru_RU");
+            url.append("&limit=2");
+            url.append("&hours=false");
+            URL obj = null;
+            try {
+                obj = new URL(url.toString());
+                ObjectMapper mapper = new ObjectMapper();
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder result = new StringBuilder();
+                try {
+                    HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+                    connection.setRequestProperty("X-Yandex-API-Key", apikey);
+                    connection.setRequestMethod("GET");
 
-            while ((inputLine = in.readLine()) != null) {
-                result.append(inputLine);
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String inputLine;
+                    StringBuilder result = new StringBuilder();
+
+                    while ((inputLine = in.readLine()) != null) {
+                        result.append(inputLine);
+                    }
+                    in.close();
+                    df = mapper.readValue(result.toString(), DisplayForecast.class);
+                    logger.debug("Requested weather forecast for " + city.get().getName() + " was successfully executed");
+                } catch (IOException e) {
+                    logger.error("I/O Exception when trying to request for API Yandex.Weather");
+                    //e.printStackTrace();
+                }
+
+            } catch (MalformedURLException e) {
+                logger.error("Incorrect format for URL when trying to request for API Yandex.Weather");
+                //e.printStackTrace();
             }
-            in.close();
-            df = mapper.readValue(result.toString(), DisplayForecast.class);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        }
+        else {
+            logger.error("Error when passing object of class City to method getForecast");
         }
         return df;
 
     }
 
+    /*
+     * getExchangeRates method
+     *
+     * output parameter instance of DisplayForecast class
+     * It makes a request to API Central Bank of Russia and receives exchange rates in JSON.
+     */
+
     @Override
     public DisplayExchangeRates getExchangeRates() {
+        logger.debug("Requesting for exchange rates");
         String url = "https://www.cbr-xml-daily.ru/daily_json.js";
-        DisplayExchangeRates der = new DisplayExchangeRates();
+
+        DisplayExchangeRates der = null;
         ObjectMapper mapper = new ObjectMapper();
 
-        HttpURLConnection connection = null;
+        HttpURLConnection connection;
         try {
             URL obj = new URL(url);
             try {
@@ -80,45 +126,130 @@ public class DashboardServiceImpl implements DashboardService {
                 }
                 in.close();
                 der = mapper.readValue(result.toString(), DisplayExchangeRates.class);
-
+                logger.debug("Requested exchange rates was successfully executed");
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("I/O Exception when trying to request for API Central Bank of Russia");
             }
 
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            logger.error("incorrect format for URL when trying to request for API Central Bank of Russia");
+            //e.printStackTrace();
         }
 
         return der;
     }
 
+    /*
+     * getGuestCounter method
+     *
+     * output parameter is count of visits to the site
+     * used MongoDB for data persistence
+     *
+     */
+
     @Override
-    public String getIP() {
-        String ip = null;
-        URL whatismyip = null;
-        try {
-            whatismyip = new URL("http://checkip.amazonaws.com");
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        whatismyip.openStream()));
-                ip = in.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
+    public Long getGuestCounter() {
+        logger.debug("Determine the number of visits to the site");
+        Long counter = null;
+        if (repository.count() == 0) {
+            setFirstValue();
+            counter = 1L;
+        }
+        else {
+            Optional<GuestCounter> optionalGc = repository.findById(1L);
+            if (optionalGc.isPresent()) {
+                GuestCounter gc = optionalGc.get();
+                repository.save(new GuestCounter(gc.getId(), gc.getCounter() + 1, new Date()));
+                counter = gc.getCounter() + 1;
+                logger.debug("Number of visits to the site successfully determined");
             }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            else {
+                logger.error("An error occurred while extracting GuestCounter data from MongoDB");
+            }
+        }
+        return counter;
+    }
+
+
+    /*
+     * getActualDateTime method
+     *
+     * output parameter is current date and time in dd.MM.yyyy HH:mm:ss format
+     * used MongoDB for data persistence
+     *
+     */
+
+    //TODO подумать, есть ли необходимость хранить дату в БД в данном случае
+
+    @Override
+    public String getActualDateTime() {
+        logger.debug("Trying to get actual date and time");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+        Date actualDate = null;
+        if (repository.count() == 0) {
+            actualDate = setFirstValue();
+        }
+        else {
+            Optional<GuestCounter> optionalGc = repository.findById(1L);
+            if (optionalGc.isPresent()) {
+                actualDate = optionalGc.get().getCurrentDate();
+
+            }
+            else {
+                logger.error("An error occurred while extracting actual date and time from MongoDB");
+            }
         }
 
+        return sdf.format(actualDate);
+    }
 
+    private Date setFirstValue(){
+        GuestCounter gc = new GuestCounter(1L, 1L, new Date());
+        repository.save(new GuestCounter(1L, 1L, new Date()));
+        return gc.getCurrentDate();
+    }
+
+    @Override
+    public String getIP() {
+        logger.debug("Requesting for remote IP address");
+        String ip = null;
+        URL whatIsMyIP;
+        try {
+            whatIsMyIP = new URL("http://checkip.amazonaws.com");
+            try {
+                BufferedReader in = new BufferedReader(new InputStreamReader(whatIsMyIP.openStream()));
+                ip = in.readLine();
+                logger.debug("Remote IP address successfully determined");
+            } catch (IOException e) {
+                logger.error("I/O Exception when trying to request for http://checkip.amazonaws.com");
+                //e.printStackTrace();
+            }
+        } catch (MalformedURLException e) {
+            logger.error("incorrect format for URL when trying to request for API Central Bank of Russia");
+            //e.printStackTrace();
+        }
         return ip;
     }
+
+
+    /*
+     * generateCityList method
+     *
+     * generate list of Cities for testing application
+     *
+     */
 
     @Override
     public List<City> generateCityList() {
         return Arrays.asList(
                 new City("Москва", 55.73870, 37.61856),
                 new City("Новосибирск", 54.8009038, 82.7511322),
-                new City("Краснодар", 44.9679583, 38.8458879)
+                new City("Краснодар", 44.9679583, 38.8458879),
+                new City("Уфа", 54.738762, 55.972055),
+                new City("Новый Уренгой", 66.085884, 76.685746),
+                new City("Каир (Египет)", 30.043084, 31.235274),
+                new City("Оттава (Канада)", 45.387847, -75.666958)
+
         );
     }
 }

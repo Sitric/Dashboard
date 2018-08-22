@@ -1,5 +1,9 @@
 package com.sitric.dashboard.model;
 
+/**
+ * City POJO class
+ */
+
 import com.vaadin.spring.annotation.SpringComponent;
 
 @SpringComponent
@@ -39,5 +43,14 @@ public class City {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    @Override
+    public String toString() {
+        return "City{" +
+                "name='" + name + '\'' +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
     }
 }

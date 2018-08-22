@@ -1,10 +1,15 @@
 package com.sitric.dashboard.model;
 
+/**
+ * DisplayExchangeRates used for binding JSON from weather informer and Java object
+ */
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vaadin.spring.annotation.SpringComponent;
 
 import java.util.Map;
+
 
 @SpringComponent
 @JsonIgnoreProperties(ignoreUnknown=true)
@@ -56,15 +61,11 @@ public class DisplayForecast {
     }
 
     @JsonProperty("forecasts")
+    @SuppressWarnings("unchecked")
     private void unpackForecastTempFromNestedObject(Object[] forecasts){
 
-        @SuppressWarnings("unchecked")
         Map<String, Object> tomorrowForecast = (Map<String, Object>)forecasts[1];
-
-        @SuppressWarnings("unchecked")
         Map<String, Object> parts = (Map<String, Object>) tomorrowForecast.get("parts");
-
-        @SuppressWarnings("unchecked")
         Map<String, Object> morning = (Map<String, Object>) parts.get("morning");
 
         weatherTomorrow = (Integer) morning.get("temp_avg");

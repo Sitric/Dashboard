@@ -53,7 +53,7 @@ public class DashboardUI extends UI {
         widgetLayout.addComponent(counter);
         widgetLayout.setComponentAlignment(counter, Alignment.TOP_RIGHT);
 
-        Label timeLabel = new Label("Информация по состоянию на 16.07.2018 15:31:44");
+        Label timeLabel = new Label("Информация по состоянию на " + service.getActualDateTime());
         bottomLayout.addComponent(timeLabel);
         bottomLayout.setComponentAlignment(timeLabel, Alignment.TOP_LEFT);
 

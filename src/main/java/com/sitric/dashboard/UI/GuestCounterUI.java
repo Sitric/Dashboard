@@ -22,7 +22,7 @@ public class GuestCounterUI extends VerticalLayout {
         Label widgetLabel = new Label("Счетчик посещений");
         counterLayout.addComponent(widgetLabel);
 
-        Label guestCounterLabel = new Label("15");
+        Label guestCounterLabel = new Label(""+ service.getGuestCounter());
         guestCounterLabel.setHeight("120");
         guestCounterLabel.setSizeFull();
         counterLayout.addComponent(guestCounterLabel);
