@@ -70,19 +70,10 @@ public class DashboardUI extends UI {
 
     private void addWidgetPanel() {
         HorizontalLayout widgetLayout = new HorizontalLayout();
-        /*widgetLayout.setSizeFull();*/
 
-//        Component forecast = weatherForecastUI.addForecastWidget();
         widgetLayout.addComponent(weatherForecastUI.addForecastWidget());
-        //widgetLayout.setComponentAlignment(forecast, Alignment.TOP_LEFT);
-
-//        Component rate = exchangeRatesUI.addExchangeRatesWidget();
         widgetLayout.addComponent(exchangeRatesUI.addExchangeRatesWidget());
-//        widgetLayout.setComponentAlignment(rate, Alignment.TOP_CENTER);
-
-//        Component counter = guestCounterUI.addGuestCounterWidget();
         widgetLayout.addComponent(guestCounterUI.addGuestCounterWidget());
-//        widgetLayout.setComponentAlignment(counter, Alignment.TOP_RIGHT);
 
         root.addComponent(widgetLayout);
 
