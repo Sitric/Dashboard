@@ -10,7 +10,6 @@ import com.sitric.dashboard.model.DisplayExchangeRates;
 import com.sitric.dashboard.model.DisplayForecast;
 import com.sitric.dashboard.model.GuestCounter;
 import com.sitric.dashboard.repository.GuestCounterRepository;
-import com.vaadin.ui.Label;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,8 @@ public class DashboardServiceImpl implements DashboardService {
     */
 
     @Override
-    public void getForecast(Optional<City> city, Label weatherCurrent, Label forecastLabel){
+    public DisplayForecast getForecast(Optional<City> city){
+        DisplayForecast df = new DisplayForecast();
         if (city.isPresent()){
             logger.debug("Requesting weather forecast for " + city.get().getName());
 
@@ -74,21 +74,21 @@ public class DashboardServiceImpl implements DashboardService {
                         result.append(inputLine);
                     }
                     in.close();
-                    DisplayForecast df = mapper.readValue(result.toString(), DisplayForecast.class);
-                    /*System.out.println("YANDEX WEATHER: " + df);
-                    System.out.println(df.equals(""));*/
-                    weatherCurrent.setValue("Температура текущая " + df.getWeatherToday() + "° C");
-                    forecastLabel.setValue("Прогноз на завтра " + df.getWeatherTomorrow() + "° C");
+                    df = mapper.readValue(result.toString(), DisplayForecast.class);
 
                     logger.debug("Requested weather forecast for " + city.get().getName() + " was successfully executed");
                 } catch (IOException e) {
-                    weatherCurrent.setValue("Отсутствует соединение с Яндекс.Погода");
+                    df.setWeatherToday(null);
+                    df.setWeatherTomorrow(null);
+
                     logger.error("I/O Exception when trying to request for API Yandex.Weather. Check application.property: yandex.apikey");
                     //e.printStackTrace();
                 }
 
             } catch (MalformedURLException e) {
-                weatherCurrent.setValue("Отсутствует соединение с Яндекс.Погода");
+
+                df.setWeatherToday(null);
+                df.setWeatherTomorrow(null);
                 logger.error("Incorrect format for URL when trying to request for API Yandex.Weather");
                 //e.printStackTrace();
             }
@@ -96,9 +96,7 @@ public class DashboardServiceImpl implements DashboardService {
         else {
             logger.error("Error when passing object of class City to method getForecast");
         }
-
-//        return df;
-
+       return df;
     }
 
     /*
@@ -109,8 +107,10 @@ public class DashboardServiceImpl implements DashboardService {
      */
 
     @Override
-    public void  getExchangeRates(Label USD, Label EUR) {
+    public DisplayExchangeRates  getExchangeRates() {
         logger.debug("Requesting for exchange rates");
+
+        DisplayExchangeRates der = new DisplayExchangeRates();
 
         String url = "https://www.cbr-xml-daily.ru/daily_json.js";
 
@@ -131,23 +131,24 @@ public class DashboardServiceImpl implements DashboardService {
                     result.append(inputLine);
                 }
                 in.close();
-                DisplayExchangeRates der = mapper.readValue(result.toString(), DisplayExchangeRates.class);
-
-                USD.setValue("USD: " + der.getUSDRate() + " RUB");
-                EUR.setValue("EUR: " + der.getEURRate() + " RUB");
+                der = mapper.readValue(result.toString(), DisplayExchangeRates.class);
 
                 logger.debug("Requested exchange rates was successfully executed");
             } catch (IOException e) {
-                EUR.setValue("Отсутствует соединение с ЦБ РФ");
+                der.setEURRate(null);
+                der.setUSDRate(null);
+
                 logger.error("I/O Exception when trying to request for API Central Bank of Russia");
             }
 
         } catch (MalformedURLException e) {
-            EUR.setValue("Отсутствует соединение с ЦБ РФ");
-            logger.error("incorrect format for URL when trying to request for API Central Bank of Russia");
+
+            der.setEURRate(null);
+            der.setUSDRate(null);
+            logger.error("Incorrect format for URL when trying to request for API Central Bank of Russia");
             //e.printStackTrace();
         }
-
+        return der;
     }
 
     /*
@@ -231,10 +232,12 @@ public class DashboardServiceImpl implements DashboardService {
                 ip = in.readLine();
                 logger.debug("Remote IP address successfully determined");
             } catch (IOException e) {
+                ip = "не доступно";
                 logger.error("I/O Exception when trying to request for http://checkip.amazonaws.com");
                 //e.printStackTrace();
             }
         } catch (MalformedURLException e) {
+            ip = "не доступно";
             logger.error("incorrect format for URL when trying to request for API Central Bank of Russia");
             //e.printStackTrace();
         }

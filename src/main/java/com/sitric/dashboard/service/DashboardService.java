@@ -14,8 +14,8 @@ import java.util.Optional;
 
 public interface DashboardService {
     List<City> generateCityList();
-    void getForecast(Optional<City> city, Label current, Label forecast);
-    void getExchangeRates(Label USD, Label EUR);
+    DisplayForecast getForecast(Optional<City> city);
+    DisplayExchangeRates getExchangeRates();
     String getIP();
     Long getGuestCounter();
     String getActualDateTime();
