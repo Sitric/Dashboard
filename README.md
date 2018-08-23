@@ -5,7 +5,8 @@
 This application consists of three widgets and displays the following information:
 1. Current weather and forecast for tomorrow with a choice of the city (source: Yandex.Weather).
 2. Currency exchange rates of the Euro and the Dollar in relation to the Ruble (source: Central Bank of the Russian Federation).
-3. The number of visits to the application, while retaining the value in the MongoDB
+3. The number of visits to the application, while retaining the value in the MongoDB.
+
 Also, the application displays the user's IP address
 
 ## Installing
