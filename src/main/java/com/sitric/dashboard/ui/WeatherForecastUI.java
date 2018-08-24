@@ -23,6 +23,9 @@ public class WeatherForecastUI extends VerticalLayout{
     private VerticalLayout forecastLayout;
 
     public WeatherForecastUI() {
+
+
+
         this.forecastLayout = new VerticalLayout();
         this.forecastLayout.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
 
@@ -80,7 +83,8 @@ public class WeatherForecastUI extends VerticalLayout{
             //update weather data from API Yandex.Weather
             DisplayForecast df = service.getForecast(comboBox.getSelectedItem());
             setTitleForWeatherLabels(df, weatherCurrent, forecastLabel);
-            //service.getForecast(comboBox.getSelectedItem(), weatherCurrent, forecastLabel);
+            BottomInfoUI.setTitleForTimeLabel();
+
         });
 
         forecastLayout.addComponent(updButton);

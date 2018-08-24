@@ -20,6 +20,8 @@ public class ExchangeRatesUI extends VerticalLayout{
 
     private VerticalLayout exchangeRatesLayout;
 
+
+
     public ExchangeRatesUI() {
         this.exchangeRatesLayout = new VerticalLayout();
         this.exchangeRatesLayout.setDefaultComponentAlignment(Alignment.BOTTOM_CENTER);
@@ -30,8 +32,6 @@ public class ExchangeRatesUI extends VerticalLayout{
     }
 
     Component addExchangeRatesWidget() {
-
-
 
         // widget title
         Label widgetLabel = new Label("Курс валют");
@@ -65,6 +65,9 @@ public class ExchangeRatesUI extends VerticalLayout{
 
             // update exchange rates info
             setTitleForExchangeRatesLabels(service.getExchangeRates(), USD, EUR);
+
+            //update actual date and time
+            BottomInfoUI.setTitleForTimeLabel();
         });
 
         exchangeRatesLayout.addComponent(updButton);

@@ -1,8 +1,9 @@
 package com.sitric.dashboard;
 
 /**
- *
+ * Main class
  */
+
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -5,21 +5,30 @@
         <Console name="Console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </Console>
-        <File name="MyFile" fileName="app.log" immediateFlush="true" append="false">
+        <File name="serviceLog" fileName="logs/service.log" immediateFlush="true" append="false">
+            <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </File>
+        <File name="rootLog" fileName="logs/root.log" immediateFlush="true" append="true">
             <PatternLayout pattern="%d{yyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
         </File>
     </Appenders>
 
     <Loggers>
+
         <Logger name= "com.sitric.dashboard.service.DashboardService" level="debug" additivity="true">
             <!--<AppenderRef ref="Console"/>-->
-            <AppenderRef ref="MyFile" />
+            <AppenderRef ref="serviceLog" />
+        </Logger>
+
+        <Logger name= "com.sitric.dashboard.ui.DashboardUI" level="debug" additivity="true">
+            <!--<AppenderRef ref="Console"/>-->
+            <AppenderRef ref="serviceLog" />
         </Logger>
 
         <!-- Root Logger -->
         <Root level="info">
-            <AppenderRef ref="Console"/>
-            <!--<AppenderRef ref="MyFile" />-->
+            <!--<AppenderRef ref="Console"/>-->
+            <AppenderRef ref="rootLog" />
         </Root>
     </Loggers>
 

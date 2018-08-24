@@ -1,9 +1,0 @@
-2018-08-23 13:57:25.403 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requesting weather forecast for Москва
-2018-08-23 13:57:25.970 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requested weather forecast for Москва was successfully executed
-2018-08-23 13:57:25.973 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requesting for exchange rates
-2018-08-23 13:57:27.014 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requested exchange rates was successfully executed
-2018-08-23 13:57:27.017 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Determine the number of visits to the site
-2018-08-23 13:57:27.123 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Number of visits to the site successfully determined
-2018-08-23 13:57:27.124 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Trying to get actual date and time
-2018-08-23 13:57:27.125 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Requesting for remote IP address
-2018-08-23 13:57:27.442 [http-nio-8080-exec-5] DEBUG com.sitric.dashboard.service.DashboardService - Remote IP address successfully determined

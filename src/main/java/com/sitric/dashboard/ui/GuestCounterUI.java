@@ -32,8 +32,6 @@ public class GuestCounterUI extends VerticalLayout{
 
     Component addGuestCounterWidget() {
 
-
-
         // widget title
         Label widgetLabel = new Label("Счетчик посещений");
 
@@ -42,8 +40,6 @@ public class GuestCounterUI extends VerticalLayout{
 
 
         counterLayout.addComponent(widgetLabel);
-
-
 
         Label guestCounterLabel = new Label(""+ service.getGuestCounter());
         guestCounterLabel.setHeight("250");

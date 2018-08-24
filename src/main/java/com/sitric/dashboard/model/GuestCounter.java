@@ -8,60 +8,48 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.util.Date;
 
-
-@Document(collection = "GuestCounter")
+@Document(collection = "guestCounter")
 public class GuestCounter {
 
     @Id
-    private Long id;
+    private String id;
 
     @Field(value = "counter")
-    private Long counter;
+    private int counter;
 
-    @Field(value = "current_date")
-    private Date currentDate;
 
     public GuestCounter() {
     }
 
-    public GuestCounter(Long id, Long counter, Date currentDate) {
+    public GuestCounter(String id, int counter) {
         this.id = id;
         this.counter = counter;
-        this.currentDate = currentDate;
+
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public Long getCounter() {
+    public int getCounter() {
         return counter;
     }
 
-    public void setCounter(Long counter) {
+    public void setCounter(int counter) {
         this.counter = counter;
     }
 
-    public Date getCurrentDate() {
-        return currentDate;
-    }
-
-    public void setCurrentDate(Date currentDate) {
-        this.currentDate = currentDate;
-    }
 
     @Override
     public String toString() {
         return "GuestCounter{" +
                 "id=" + id +
                 ", counter=" + counter +
-                ", currentDate=" + currentDate +
                 '}';
     }
 }

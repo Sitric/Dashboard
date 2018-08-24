@@ -16,7 +16,10 @@ After cloning the repository, go to the directory with Dashboard and type in the
 mvn install
 ```
 After this command, a target directory will appear. In this directory you can find dashboard-0.0.1-SNAPSHOT.war file. 
-Now you can move this file to tomcat/webapps directory and run.
+Now you can move this file to tomcat/webapps directory and run in your browser:
+```
+http://localhost:8080/dashboard-0.0.1-SNAPSHOT/
+```
 
 ## Built With
 
@@ -29,7 +32,9 @@ Now you can move this file to tomcat/webapps directory and run.
  
  ## Logs
  
- Application logs are stored in a file app.log
+ Application logs are stored in project's directory **/logs**:
+ 1. **root.log** - main application log 
+ 2. **service.log** - event handling of the service layer
  
 ## Author
 

@@ -14,15 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
+import java.net.*;
 import java.util.*;
 
 @Service
@@ -33,8 +32,14 @@ public class DashboardServiceImpl implements DashboardService {
     @Autowired
     GuestCounterRepository repository;
 
+    @Autowired
+    NextGuestCounterService nextGuestCounterService;
+
     @Value("${yandex.apikey}")
     private String apikey;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     /*
     * getForecast method
@@ -160,88 +165,45 @@ public class DashboardServiceImpl implements DashboardService {
      */
 
     @Override
-    public Long getGuestCounter() {
+    public int getGuestCounter() {
         logger.debug("Determine the number of visits to the site");
-        Long counter = null;
-        if (repository.count() == 0) {
-            setFirstValue();
-            counter = 1L;
-        }
-        else {
-            Optional<GuestCounter> optionalGc = repository.findById(1L);
-            if (optionalGc.isPresent()) {
-                GuestCounter gc = optionalGc.get();
-                repository.save(new GuestCounter(gc.getId(), gc.getCounter() + 1, new Date()));
-                counter = gc.getCounter() + 1;
-                logger.debug("Number of visits to the site successfully determined");
-            }
-            else {
-                logger.error("An error occurred while extracting GuestCounter data from MongoDB");
-            }
-        }
-        return counter;
+        //System.out.println("IMPORTANT!!!!!" + repository.findAll());
+
+        GuestCounter gc = new GuestCounter();
+        gc.setId("guestCounter");
+        gc.setCounter(nextGuestCounterService.getNextGuestCounter("guestCounter"));
+        repository.save(gc);
+
+        return gc.getCounter();
     }
 
 
     /*
-     * getActualDateTime method
+     * getIP method
      *
-     * output parameter is current date and time in dd.MM.yyyy HH:mm:ss format
-     * used MongoDB for data persistence
+     * input parameter HttpServletRequest
+     * output parameter client IP address
      *
      */
 
-
     @Override
-    public String getActualDateTime() {
-        logger.debug("Trying to get actual date and time");
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-        Date actualDate = null;
-        if (repository.count() == 0) {
-            actualDate = setFirstValue();
+    public String getIP(HttpServletRequest request) {
+        logger.debug("Requesting for user's IP address");
+
+        String remoteAddr = "";
+
+        if (request != null) {
+            //X-FORWARDED-FOR содержит цепочку прокси адресов и последним идёт IP непосредственного клиента обратившегося к прокси серверу
+            remoteAddr = request.getHeader("X-FORWARDED-FOR");
+            if (remoteAddr == null || "".equals(remoteAddr)) {
+                remoteAddr = request.getRemoteAddr();
+            }
         }
         else {
-            Optional<GuestCounter> optionalGc = repository.findById(1L);
-            if (optionalGc.isPresent()) {
-                actualDate = optionalGc.get().getCurrentDate();
-
-            }
-            else {
-                logger.error("An error occurred while extracting actual date and time from MongoDB");
-            }
+            logger.debug("HttpServletRequest does not contain information about the user's IP address");
         }
 
-        return sdf.format(actualDate);
-    }
-
-    private Date setFirstValue(){
-        GuestCounter gc = new GuestCounter(1L, 1L, new Date());
-        repository.save(new GuestCounter(1L, 1L, new Date()));
-        return gc.getCurrentDate();
-    }
-
-    @Override
-    public String getIP() {
-        logger.debug("Requesting for remote IP address");
-        String ip = null;
-        URL whatIsMyIP;
-        try {
-            whatIsMyIP = new URL("http://checkip.amazonaws.com");
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(whatIsMyIP.openStream()));
-                ip = in.readLine();
-                logger.debug("Remote IP address successfully determined");
-            } catch (IOException e) {
-                ip = "не доступно";
-                logger.error("I/O Exception when trying to request for http://checkip.amazonaws.com");
-                //e.printStackTrace();
-            }
-        } catch (MalformedURLException e) {
-            ip = "не доступно";
-            logger.error("incorrect format for URL when trying to request for API Central Bank of Russia");
-            //e.printStackTrace();
-        }
-        return ip;
+        return remoteAddr;
     }
 
 
