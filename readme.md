@@ -11,7 +11,7 @@ Also, the application displays the user's IP address
 
 ## Installing
 
-After cloning the repository, go to the directory with Dashboard and type in the terminal
+After cloning repository, go to the directory with Dashboard and type in the terminal
 ```
 mvn install
 ```
