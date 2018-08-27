@@ -167,7 +167,6 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public int getGuestCounter() {
         logger.debug("Determine the number of visits to the site");
-        //System.out.println("IMPORTANT!!!!!" + repository.findAll());
 
         GuestCounter gc = new GuestCounter();
         gc.setId("guestCounter");

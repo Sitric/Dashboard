@@ -4,17 +4,23 @@ package com.sitric.dashboard.ui;
  * WeatherForecast ui class
  */
 
+import com.sitric.dashboard.helper.Broadcaster;
 import com.sitric.dashboard.model.City;
 import com.sitric.dashboard.model.DisplayForecast;
 import com.sitric.dashboard.service.DashboardService;
-import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
-@SpringUI(path = "")
+@SpringComponent
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class WeatherForecastUI extends VerticalLayout{
 
     @Autowired
@@ -83,8 +89,8 @@ public class WeatherForecastUI extends VerticalLayout{
             //update weather data from API Yandex.Weather
             DisplayForecast df = service.getForecast(comboBox.getSelectedItem());
             setTitleForWeatherLabels(df, weatherCurrent, forecastLabel);
-            BottomInfoUI.setTitleForTimeLabel();
 
+            Broadcaster.broadcast("Информация по состоянию на " + new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date()));
         });
 
         forecastLayout.addComponent(updButton);
@@ -100,6 +106,4 @@ public class WeatherForecastUI extends VerticalLayout{
             forecastLabel.setValue("Прогноз на завтра " + df.getWeatherTomorrow() + "° C");
         }
     }
-
-
 }

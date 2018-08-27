@@ -4,15 +4,22 @@ package com.sitric.dashboard.ui;
  * ExchangeRates ui class
  */
 
+import com.sitric.dashboard.helper.Broadcaster;
 import com.sitric.dashboard.model.DisplayExchangeRates;
 import com.sitric.dashboard.service.DashboardService;
-import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.*;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
-@SpringUI
+@SpringComponent
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class ExchangeRatesUI extends VerticalLayout{
 
     @Autowired
@@ -52,12 +59,12 @@ public class ExchangeRatesUI extends VerticalLayout{
         setTitleForExchangeRatesLabels(der, USD, EUR);
 
         // "обновить" button
-        addUpdateWeatherButton(USD, EUR);
+        addUpdateExchangeRatesButton(USD, EUR);
 
         return exchangeRatesLayout;
     }
 
-    private void addUpdateWeatherButton(Label USD, Label EUR) {
+    private void addUpdateExchangeRatesButton(Label USD, Label EUR) {
         Button updButton = new Button("обновить");
         updButton.setStyleName(ValoTheme.BUTTON_PRIMARY);
 
@@ -67,7 +74,7 @@ public class ExchangeRatesUI extends VerticalLayout{
             setTitleForExchangeRatesLabels(service.getExchangeRates(), USD, EUR);
 
             //update actual date and time
-            BottomInfoUI.setTitleForTimeLabel();
+            Broadcaster.broadcast("Информация по состоянию на " + new SimpleDateFormat("dd.MM.yyyy HH:mm:ss").format(new Date()));
         });
 
         exchangeRatesLayout.addComponent(updButton);

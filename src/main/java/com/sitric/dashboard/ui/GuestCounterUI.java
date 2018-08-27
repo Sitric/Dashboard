@@ -5,15 +5,18 @@ package com.sitric.dashboard.ui;
  */
 
 import com.sitric.dashboard.service.DashboardService;
-import com.vaadin.spring.annotation.SpringUI;
+import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.Scope;
 
-@SpringUI
+@SpringComponent
+@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 public class GuestCounterUI extends VerticalLayout{
 
     @Autowired

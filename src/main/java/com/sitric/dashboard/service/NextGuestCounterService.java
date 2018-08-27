@@ -1,5 +1,10 @@
 package com.sitric.dashboard.service;
 
+/**
+ *
+ * Service class for increment guest counter value
+ */
+
 import com.sitric.dashboard.model.GuestCounter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
@@ -18,11 +23,12 @@ public class NextGuestCounterService {
 
     public int getNextGuestCounter(String counterName)
     {
-        GuestCounter counter = mongo.findAndModify(
-                query(where("_id").is(counterName)),
-                new Update().inc("counter",1),
-                options().returnNew(true).upsert(true),
-                GuestCounter.class);
+        GuestCounter counter  = mongo.findAndModify(
+            query(where("_id").is(counterName)),
+            new Update().inc("counter",1),
+            options().returnNew(true).upsert(true),
+            GuestCounter.class);
+
         return counter.getCounter();
     }
 }
